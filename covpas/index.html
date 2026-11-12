@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="hr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Čovpas i ekipa: deset veselih pitanja o junacima, prijateljstvu i supermoćima. Neslužbeni fanovski kviz."><title>Čovpas i ekipa · Dječji kvizovi</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#0b1429;color:#f5f7ff}*{box-sizing:border-box}body{margin:0}main{max-width:760px;margin:auto;padding:32px 20px}a{color:#ffd56a}header{margin:28px 0}.label{color:#ffd56a;font-weight:800;letter-spacing:2px;font-size:13px}h1{font-size:clamp(32px,7vw,48px);margin:12px 0}p{line-height:1.6;color:#b7c5dd}.panel{background:#14223d;border:1px solid #2a3c5b;border-radius:20px;padding:26px}.stats{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-weight:700;color:#ffd56a}progress{width:100%;height:12px;accent-color:#ffd56a;margin:18px 0}h2{font-size:clamp(23px,5vw,29px);line-height:1.35;margin:12px 0 24px}#choices{display:grid;gap:12px}button{font:inherit;line-height:1.5;cursor:pointer;border-radius:12px;min-height:58px;padding:16px 20px;overflow-wrap:anywhere}#choices button{text-align:left;background:#1b2c49;color:#f5f7ff;border:2px solid #405573;font-weight:650;width:100%}#choices button:hover:not(:disabled){border-color:#ffd56a}button:focus-visible,a:focus-visible{outline:3px solid #ffd56a;outline-offset:4px}#choices button:disabled{cursor:default;opacity:1}#choices button.correct{background:#163e36;border-color:#75e0b2}#choices button.wrong{background:#482a39;border-color:#ffa7bb}#feedback{line-height:1.65;margin:22px 0;color:#f5f7ff}#next,#replay{background:#ffd56a;color:#172039;border:0;font-weight:800;width:100%}#storage-warning{background:#413921;padding:14px;border-radius:12px;color:#ffe9ab}footer{font-size:13px;line-height:1.7;color:#b7c5dd;margin-top:26px}[hidden]{display:none!important}@media(max-width:450px){main{padding:24px 14px}.panel{padding:20px 16px}}
+</style></head>
+<body><main><a href="/djecji-kvizovi/">← Sve igre</a><header><div class="label">🐾 MISIJA: SUPER PRIJATELJSTVO</div><h1>Čovpas i ekipa</h1><p>10 pitanja, 3 odgovora i jedna jako sumnjiva banana. Odaberi odgovor, pročitaj objašnjenje i tek onda kreni dalje!</p></header>
+<p id="storage-warning" role="status" hidden>Spremanje nije dostupno u ovom pregledniku. Možeš igrati, ali nakon osvježavanja stranice napredak se neće sačuvati.</p>
+<section class="panel" aria-label="Kviz"><div class="stats"><span id="progress-label"></span><span id="score"></span></div><progress id="progress" max="10" value="0" aria-label="Broj odgovorenih pitanja"></progress>
+<div id="round"><h2 id="question" tabindex="-1"></h2><div id="choices" aria-label="Ponuđeni odgovori"></div><p id="feedback" role="status" aria-live="polite"></p><button id="next" hidden>Sljedeće pitanje →</button></div>
+<div id="result" hidden><h2 id="outcome" tabindex="-1"></h2><p id="summary"></p><p>Odgovorio/la si na svih 10 pitanja — banka je iscrpljena! Nema novih pitanja u ovoj igri. Samo ako želiš, ponovno odigraj istih deset u novom, izmiješanom redoslijedu.</p><button id="replay">Ponovno odigraj istih 10 pitanja ↻</button></div></section>
+<footer>Neslužbeni fanovski kviz o serijalu Čovpas (Dog Man) Dava Pilkeyja. Koristimo izvorna imena likova; ona se mogu razlikovati u prijevodima. Pogrešni odgovori namjerno su šaljivi. Bez službenih ilustracija i bez povezanosti s autorom ili izdavačem.</footer><noscript><p>Za igru uključi JavaScript u pregledniku.</p></noscript></main>
+<script>
+'use strict';
+const bank = [
+ {q:'Tko je Čovpas?',a:['Policajac s ljudskim tijelom i psećom glavom','Pekar s glavom kroasana','Pas koji glumi semafor'],e:'Čovpas spaja ljudsko tijelo i pseću glavu. Bori se protiv zločina, ali pseće navike ne ostavlja kod kuće!'},
+ {q:'Tko je Petey?',a:['Mačak izumitelj i nekadašnji protivnik','Hrčak koji popravlja oblake','Tajni kralj sendviča'],e:'Petey je mačak i izumitelj koji je bio Čovpasov protivnik. Njegova priča pokazuje da se i likovi mogu promijeniti.'},
+ {q:"Kako je nastao Li’l Petey?",a:['Nastao je u Peteyjevu stroju za kloniranje','Izlegao se iz čokoladnog jajeta','Dostavila ga je leteća pizza'],e:"Li’l Petey nastao je Peteyjevim pokušajem kloniranja. Umjesto velike pomoći pojavio se mali mačić s velikim srcem!"},
+ {q:"Koja osobina najbolje opisuje Li’l Peteyja?",a:['Dobrota: u svima vidi nešto dobro','Skuplja čarape samo lijevom šapom','Uvijek ljutito viče na brokulu'],e:"Li’l Petey je suosjećajan i u drugima traži dobro. Dobrota je njegova posebna supermoć."},
+ {q:'Tko je 80-HD?',a:['Robot i prijatelj ekipe','Televizor koji jede kokice','Osamdeset hrčaka u baloneru'],e:"80-HD je robot i odan prijatelj Li’l Peteyja i Čovpasa. Prijateljstvo ne treba biti od krvi i mesa!"},
+ {q:'Kakve moći ima Flippy?',a:['Riba s telekinetičkim moćima','Kaktus koji pleše balet','Pingvin koji pretvara juhu u čarape'],e:'Flippy je riba s telekinetičkim moćima: može pomicati stvari snagom uma. Peraje mu zato nisu prepreka!'},
+ {q:'Tko je Chief?',a:['Šef policije','Glavni kušač sladoleda na Mjesecu','Kapetan podmornice od sira'],e:'Chief je šef policije, odnosno Čovpasov nadređeni. S takvim policajcem radni dan teško može biti dosadan.'},
+ {q:'Čime se bavi Sarah Hatoff?',a:['Novinarka','Trenerica letećih krastavaca','Prodavačica nevidljivih šešira'],e:'Sarah Hatoff je novinarka koja izvještava o događajima. Dobra priča uvijek joj je blizu!'},
+ {q:'Tko je Zuzu?',a:['Sarahina pudlica','Zmaj veličine papuče','Robot usisavač s brkovima'],e:'Zuzu je pudlica novinarke Sarah Hatoff. I mali pas ima svoje mjesto među velikim pustolovinama!'},
+ {q:"Kako se zove ekipa Čovpasa, Li’l Peteyja i 80-HD-ja?",a:['Supa Buddies','Družina hrskavih papuča','Liga uspavanih banana'],e:'Njihova superherojska ekipa zove se Supa Buddies. Zajedno pokazuju koliko vrijede prijateljstvo i suradnja.'}
+];
+const KEY='djecji-kvizovi:covpas:session:v1';
+const $=id=>document.getElementById(id);
+function shuffle(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function fresh(){return {order:shuffle(bank.map((_,i)=>i)),options:bank.map(()=>shuffle([0,1,2])),answers:Array(10).fill(null),index:0,score:0};}
+function permutation(a,n){return Array.isArray(a)&&a.length===n&&new Set(a).size===n&&a.every(x=>Number.isInteger(x)&&x>=0&&x<n);}
+function valid(s){return s&&permutation(s.order,10)&&Array.isArray(s.options)&&s.options.length===10&&s.options.every(a=>permutation(a,3))&&Number.isInteger(s.index)&&s.index>=0&&s.index<=10&&Array.isArray(s.answers)&&s.answers.length===10&&s.answers.every((a,i)=>(a===null||Number.isInteger(a)&&a>=0&&a<3)&&(i<s.index?a!==null:i>s.index?a===null:true))&&s.score===s.answers.filter(a=>a===0).length;}
+function storageFailed(){$('storage-warning').hidden=false;}
+let state;
+try{const saved=JSON.parse(localStorage.getItem(KEY));state=valid(saved)?saved:fresh();}catch{storageFailed();state=fresh();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{storageFailed();}}
+function render(){
+ const done=state.index===10;const answered=state.answers.filter(a=>a!==null).length;
+ $('score').textContent=`Bodovi: ${state.score} / 10`;
+ $('progress-label').textContent=done?'Misija završena!':`Pitanje ${state.index+1} / 10`;
+ $('progress').value=answered;$('round').hidden=done;$('result').hidden=!done;
+ if(done){$('outcome').textContent=state.score>=8?'🏅 Superšapa znanja!':state.score>=5?'🦴 Detektiv s dobrim njuhom!':'🍌 Junak na obuci — banana nije kriva!';$('summary').textContent=`Tvoj rezultat: ${state.score} / 10. ${state.score>=8?'Čak bi ti i 80-HD zapljeskao!':state.score>=5?'Još malo njuškanja i slučaj je riješen!':'Svaki junak nešto nauči. Li’l Petey navija za tebe!'}`;return;}
+ const id=state.order[state.index],q=bank[id],chosen=state.answers[state.index];
+ $('question').textContent=q.q;$('choices').replaceChildren();
+ for(const option of state.options[id]){const b=document.createElement('button');b.textContent=q.a[option];b.disabled=chosen!==null;if(chosen!==null){if(option===0)b.className='correct';else if(option===chosen)b.className='wrong';}b.addEventListener('click',()=>answer(option));$('choices').append(b);}
+ $('feedback').textContent=chosen===null?'':`${chosen===0?'✓ Točno!':'✗ Nije točno. Točan odgovor: '+q.a[0]+'.'} ${q.e}`;
+ $('next').hidden=chosen===null;$('next').textContent=state.index===9?'Pogledaj rezultat →':'Sljedeće pitanje →';
+}
+function answer(option){if(state.index>=10||state.answers[state.index]!==null)return;state.answers[state.index]=option;if(option===0)state.score++;save();render();$('next').focus();}
+$('next').addEventListener('click',()=>{if(state.index>=10||state.answers[state.index]===null)return;state.index++;save();render();$(state.index===10?'outcome':'question').focus();});
+$('replay').addEventListener('click',()=>{if(state.index!==10)return;state=fresh();save();render();$('question').focus();});
+save();render();
+</script></body></html>
